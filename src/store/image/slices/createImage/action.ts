@@ -15,6 +15,8 @@ export interface CreateImageAction {
    * eg: invalid api key, recreate image
    */
   recreateImage: (generationBatchId: string) => Promise<void>;
+
+  internal_setTaskIds: (tasks: { id: string; asyncTaskId: string }[]) => void;
 }
 
 // ====== helper functions ====== //
@@ -27,6 +29,14 @@ export const createCreateImageSlice: StateCreator<
   [],
   CreateImageAction
 > = (set, get) => ({
+  internal_setTaskIds: (tasks) => {
+    const { generationTaskIds } = get();
+    const newTasks = { ...generationTaskIds };
+    for (const task of tasks) {
+      newTasks[task.id] = task.asyncTaskId;
+    }
+    set({ generationTaskIds: newTasks }, false, 'internal_setTaskIds');
+  },
   async createImage() {
     set({ isCreating: true }, false, 'createImage/startCreateImage');
 
@@ -36,7 +46,8 @@ export const createCreateImageSlice: StateCreator<
     const provider = imageGenerationConfigSelectors.provider(store);
     const model = imageGenerationConfigSelectors.model(store);
     const activeGenerationTopicId = generationTopicSelectors.activeGenerationTopicId(store);
-    const { createGenerationTopic, switchGenerationTopic, setTopicBatchLoaded } = store;
+    const { createGenerationTopic, switchGenerationTopic, setTopicBatchLoaded, internal_setTaskIds } =
+      store;
 
     if (!parameters) {
       throw new TypeError('parameters is not initialized');
@@ -73,13 +84,19 @@ export const createCreateImageSlice: StateCreator<
       }
 
       // 5. Create image via service
-      await imageService.createImage({
+      const res = await imageService.createImage({
         generationTopicId: finalTopicId!,
         provider,
         model,
         imageNum,
         params: parameters as any,
       });
+
+      if (res.data.generations) {
+        internal_setTaskIds(
+          res.data.generations.map((g) => ({ id: g.id, asyncTaskId: g.asyncTaskId })),
+        );
+      }
 
       // 6. Only refresh generation batches if it's not a new topic
       if (!isNewTopic) {

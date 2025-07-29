@@ -44,13 +44,31 @@ interface ImageItemProps {
   preview?: ImageProps['preview'];
   style?: CSSProperties;
   url?: string;
+  asyncTaskId?: string;
+  generationId?: string;
 }
 
+import { useImageStore } from '@/store/image';
+
 const ImageItem = memo<ImageItemProps>(
-  ({ className, style, editable, alt, onRemove, url, loading, alwaysShowClose, preview }) => {
+  ({
+    className,
+    style,
+    editable,
+    alt,
+    onRemove,
+    url,
+    loading,
+    alwaysShowClose,
+    preview,
+    asyncTaskId,
+    generationId,
+  }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
+    const [useCheckGenerationStatus] = useImageStore((s) => [s.useCheckGenerationStatus]);
+    useCheckGenerationStatus(generationId, asyncTaskId);
 
     return (
       <Image

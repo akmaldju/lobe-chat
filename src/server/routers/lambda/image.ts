@@ -238,7 +238,10 @@ export const imageRouter = router({
     return {
       data: {
         batch: createdBatch,
-        generations: createdGenerations,
+        generations: generationsWithTasks.map((item) => ({
+          ...item.generation,
+          asyncTaskId: item.asyncTaskId,
+        })),
       },
       success: true,
     };

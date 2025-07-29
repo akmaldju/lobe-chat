@@ -686,11 +686,20 @@ export const generateAIChat: StateCreator<
           }
 
           case 'base64_image': {
+            const { useImageStore } = await import('@/store/image');
+            const taskIds = useImageStore.getState().generationTaskIds;
+
             internal_dispatchMessage({
               id: messageId,
               type: 'updateMessage',
               value: {
-                imageList: chunk.images.map((i) => ({ id: i.id, url: i.data, alt: i.id })),
+                imageList: chunk.images.map((i) => ({
+                  id: i.id,
+                  url: i.data,
+                  alt: i.id,
+                  asyncTaskId: taskIds[i.id],
+                  generationId: i.id,
+                })),
               },
             });
             const image = chunk.image;
