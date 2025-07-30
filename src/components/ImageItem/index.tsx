@@ -66,8 +66,11 @@ const ImageItem = memo<ImageItemProps>(
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
-    const [useCheckGenerationStatus] = useImageStore((s) => [s.useCheckGenerationStatus]);
-    useCheckGenerationStatus(generationId, asyncTaskId);
+    const [useCheckGenerationStatus, activeGenerationTopicId] = useImageStore((s) => [
+      s.useCheckGenerationStatus,
+      s.activeGenerationTopicId,
+    ]);
+    useCheckGenerationStatus(generationId, asyncTaskId, activeGenerationTopicId);
 
     return (
       <Image
