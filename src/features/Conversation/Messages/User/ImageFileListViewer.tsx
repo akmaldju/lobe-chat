@@ -10,8 +10,6 @@ interface ImageFileItem {
   loading?: boolean;
   onRemove?: (id: string) => void;
   url: string;
-  asyncTaskId?: string;
-  generationId?: string;
 }
 
 interface FileListProps {
@@ -21,19 +19,7 @@ interface FileListProps {
 const ImageFileListViewer = memo<FileListProps>(({ items }) => {
   return (
     <PreviewGroup>
-      <GalleyGrid
-        items={items}
-        renderItem={({ id, url, alt, loading, onRemove, asyncTaskId, generationId }) => (
-          <ImageItem
-            alt={alt}
-            asyncTaskId={asyncTaskId}
-            generationId={generationId}
-            loading={loading}
-            onRemove={() => onRemove?.(id)}
-            url={url}
-          />
-        )}
-      />
+      <GalleyGrid items={items} renderItem={ImageItem} />
     </PreviewGroup>
   );
 });
