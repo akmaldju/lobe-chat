@@ -4,7 +4,6 @@ import { Trash } from 'lucide-react';
 import { CSSProperties, memo } from 'react';
 
 import { usePlatform } from '@/hooks/usePlatform';
-import { useImageStore } from '@/store/image';
 
 import { MIN_IMAGE_SIZE } from './style';
 
@@ -37,17 +36,19 @@ const useStyles = createStyles(({ css, token }) => ({
 interface ImageItemProps {
   alt?: string;
   alwaysShowClose?: boolean;
-  asyncTaskId?: string;
   className?: string;
   editable?: boolean;
-  generationId?: string;
   loading?: boolean;
   onClick?: () => void;
   onRemove?: () => void;
   preview?: ImageProps['preview'];
   style?: CSSProperties;
   url?: string;
+  asyncTaskId?: string;
+  generationId?: string;
 }
+
+import { useImageStore } from '@/store/image';
 
 const ImageItem = memo<ImageItemProps>(
   ({
@@ -66,11 +67,8 @@ const ImageItem = memo<ImageItemProps>(
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
-    const [useCheckGenerationStatus, activeGenerationTopicId] = useImageStore((s) => [
-      s.useCheckGenerationStatus,
-      s.activeGenerationTopicId,
-    ]);
-    useCheckGenerationStatus(generationId, asyncTaskId, activeGenerationTopicId);
+    const [useCheckGenerationStatus] = useImageStore((s) => [s.useCheckGenerationStatus]);
+    useCheckGenerationStatus(generationId, asyncTaskId);
 
     return (
       <Image
