@@ -6,12 +6,12 @@ import ImageItem from '@/components/ImageItem';
 
 interface ImageFileItem {
   alt?: string;
+  asyncTaskId?: string;
+  generationId?: string;
   id: string;
   loading?: boolean;
   onRemove?: (id: string) => void;
   url: string;
-  asyncTaskId?: string;
-  generationId?: string;
 }
 
 interface FileListProps {

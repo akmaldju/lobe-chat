@@ -1,9 +1,9 @@
 export interface ChatImageItem {
   alt: string;
-  id: string;
-  url: string;
   asyncTaskId?: string;
   generationId?: string;
+  id: string;
+  url: string;
 }
 
 export interface ChatImageChunk {
