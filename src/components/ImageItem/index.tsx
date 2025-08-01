@@ -36,8 +36,10 @@ const useStyles = createStyles(({ css, token }) => ({
 interface ImageItemProps {
   alt?: string;
   alwaysShowClose?: boolean;
+  asyncTaskId?: string;
   className?: string;
   editable?: boolean;
+  generationId?: string;
   loading?: boolean;
   onClick?: () => void;
   onRemove?: () => void;
@@ -46,11 +48,33 @@ interface ImageItemProps {
   url?: string;
 }
 
+import { useImageStore } from '@/store/image';
+
 const ImageItem = memo<ImageItemProps>(
-  ({ className, style, editable, alt, onRemove, url, loading, alwaysShowClose, preview }) => {
+  ({
+    className,
+    style,
+    editable,
+    alt,
+    onRemove,
+    url,
+    loading,
+    alwaysShowClose,
+    preview,
+    asyncTaskId,
+    generationId,
+  }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
+    const [useCheckGenerationStatus, activeGenerationTopicId] = useImageStore((s) => [
+      s.useCheckGenerationStatus,
+      s.activeGenerationTopicId,
+    ]);
+
+    if (activeGenerationTopicId) {
+      useCheckGenerationStatus(generationId, asyncTaskId, activeGenerationTopicId);
+    }
 
     return (
       <Image
