@@ -106,19 +106,5 @@ export const dalleSlice: StateCreator<
   },
 
   useFetchDalleImageItem: (id) =>
-    useClientDataSWR([SWR_FETCH_KEY, id], async () => {
-      const item = await fileService.getFile(id);
-
-      set(
-        produce((draft) => {
-          if (draft.dalleImageMap[id]) return;
-
-          draft.dalleImageMap[id] = item;
-        }),
-        false,
-        n('useFetchFile'),
-      );
-
-      return item;
-    }),
+    useClientDataSWR<string>([SWR_FETCH_KEY, id], () => fileService.getFile(id).then((i) => i.url)),
 });

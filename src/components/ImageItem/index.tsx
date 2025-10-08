@@ -4,6 +4,7 @@ import { Trash } from 'lucide-react';
 import { CSSProperties, memo } from 'react';
 
 import { usePlatform } from '@/hooks/usePlatform';
+import { useChatStore } from '@/store/chat';
 
 import { MIN_IMAGE_SIZE } from './style';
 
@@ -33,11 +34,12 @@ const useStyles = createStyles(({ css, token }) => ({
   `,
 }));
 
-interface ImageItemProps {
+export interface ImageItemProps {
   alt?: string;
   alwaysShowClose?: boolean;
   className?: string;
   editable?: boolean;
+  imageId?: string;
   loading?: boolean;
   onClick?: () => void;
   onRemove?: () => void;
@@ -47,10 +49,23 @@ interface ImageItemProps {
 }
 
 const ImageItem = memo<ImageItemProps>(
-  ({ className, style, editable, alt, onRemove, url, loading, alwaysShowClose, preview }) => {
+  ({
+    className,
+    style,
+    editable,
+    alt,
+    onRemove,
+    url,
+    loading,
+    alwaysShowClose,
+    preview,
+    imageId,
+  }) => {
     const IMAGE_SIZE = editable ? MIN_IMAGE_SIZE : '100%';
     const { styles, cx } = useStyles();
     const { isSafari } = usePlatform();
+    const useFetchDalleImageItem = useChatStore((s) => s.useFetchDalleImageItem);
+    const { data } = useFetchDalleImageItem(imageId!);
 
     return (
       <Image
@@ -75,7 +90,7 @@ const ImageItem = memo<ImageItemProps>(
         isLoading={loading}
         preview={preview}
         size={IMAGE_SIZE as any}
-        src={url}
+        src={data || url}
         style={{ height: isSafari ? 'auto' : '100%', width: '100%', ...style }}
         wrapperClassName={cx(styles.image, editable && styles.editableImage)}
       />
